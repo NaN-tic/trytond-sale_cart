@@ -12,6 +12,7 @@ MODULE = 'sale_cart'
 PREFIX = 'trytonzz'
 MODULE2PREFIX = {}
 
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
@@ -66,7 +67,6 @@ setup(name='%s_%s' % (PREFIX, MODULE),
         'Natural Language :: Catalan',
         'Natural Language :: Spanish',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Topic :: Office/Business',
         ],

@@ -4,6 +4,7 @@
 from trytond.pool import Pool
 from .sale_cart import *
 
+
 def register():
     Pool.register(
         SaleCart,
@@ -11,4 +12,3 @@ def register():
     Pool.register(
         CartCreateSale,
         module='sale_cart', type_='wizard')
-

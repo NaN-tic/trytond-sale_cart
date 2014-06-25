@@ -1,5 +1,5 @@
-#This file is part sale_cart module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains 
+#This file is part of sale_cart module for Tryton.
+#The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.wizard import Wizard, StateTransition, StateAction
@@ -18,29 +18,29 @@ class SaleCart(ModelSQL, ModelView):
     _rec_name = 'product'
     cart_date = fields.Date('Date',
         states={
-            'readonly': (Eval('state') != 'draft') 
+            'readonly': (Eval('state') != 'draft')
             },
         depends=['state'], required=True)
-    party = fields.Many2One('party.party', 'Party', 
+    party = fields.Many2One('party.party', 'Party',
         states={
-            'readonly': (Eval('state') != 'draft') 
+            'readonly': (Eval('state') != 'draft')
             })
     quantity = fields.Float('Quantity',
         digits=(16, 2),
         states={
-            'readonly': (Eval('state') != 'draft') 
+            'readonly': (Eval('state') != 'draft')
             }, required=True)
     product = fields.Many2One('product.product', 'Product',
         domain=[('salable', '=', True)],
         states={
-            'readonly': (Eval('state') != 'draft') 
+            'readonly': (Eval('state') != 'draft')
             }, required=True,
         context={
             'salable': True,
             })
     unit_price = fields.Numeric('Unit Price', digits=(16, 4),
         states={
-            'readonly': (Eval('state') != 'draft') 
+            'readonly': (Eval('state') != 'draft')
             }, required=True)
     untaxed_amount = fields.Function(fields.Numeric('Untaxed',
             digits=(16, Eval('currency_digits', 2)),
@@ -54,7 +54,7 @@ class SaleCart(ModelSQL, ModelView):
             ), 'get_total_amount')
     currency = fields.Many2One('currency.currency', 'Currency',
         states={
-            'readonly': (Eval('state') != 'draft') 
+            'readonly': (Eval('state') != 'draft')
             }, required=True,
         depends=['state'])
     currency_digits = fields.Function(fields.Integer('Currency Digits'),
@@ -149,9 +149,9 @@ class SaleCart(ModelSQL, ModelView):
 
             tax_amount = Decimal('0.0')
             for tax in tax_list:
-                key, val = Invoice._compute_tax(tax, 'out_invoice')
+                _, val = Invoice._compute_tax(tax, 'out_invoice')
                 tax_amount += val.get('amount')
-            return self.get_untaxed_amount(name)+tax_amount
+            return self.get_untaxed_amount(name) + tax_amount
         return Decimal('0.0')
 
     @classmethod
@@ -169,7 +169,7 @@ class SaleCart(ModelSQL, ModelView):
         Return sales list
         '''
         pool = Pool()
-        Sale  = pool.get('sale.sale')
+        Sale = pool.get('sale.sale')
         SaleLine = pool.get('sale.line')
 
         cart_group = {}
@@ -220,7 +220,6 @@ class CartCreateSale(Wizard):
     start_state = 'create_sale'
     create_sale = StateTransition()
     open_ = StateAction('sale.act_sale_form')
-
 
     def transition_create_sale(self):
         Cart = Pool().get('sale.cart')
