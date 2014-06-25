@@ -1,0 +1,115 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:sale.cart:"
+msgid "Add a party in ID \"%s\" cart."
+msgstr "Afegeix un tercer a la cistella \"%s\"."
+
+msgctxt "error:sale.cart:"
+msgid "Cart \"%s - %s\" is done. Can not delete."
+msgstr "La cistella \"%s - %s\" es troba en estat realitzat. No es pot eliminar."
+
+msgctxt "field:sale.cart,cart_date:"
+msgid "Date"
+msgstr "Data"
+
+msgctxt "field:sale.cart,create_date:"
+msgid "Create Date"
+msgstr "Data creació"
+
+msgctxt "field:sale.cart,create_uid:"
+msgid "Create User"
+msgstr "Usuari creació"
+
+msgctxt "field:sale.cart,currency:"
+msgid "Currency"
+msgstr "Moneda"
+
+msgctxt "field:sale.cart,currency_digits:"
+msgid "Currency Digits"
+msgstr "Decimals de la moneda"
+
+msgctxt "field:sale.cart,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:sale.cart,party:"
+msgid "Party"
+msgstr "Tercer"
+
+msgctxt "field:sale.cart,product:"
+msgid "Product"
+msgstr "Producte"
+
+msgctxt "field:sale.cart,quantity:"
+msgid "Quantity"
+msgstr "Quantitat"
+
+msgctxt "field:sale.cart,rec_name:"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "field:sale.cart,state:"
+msgid "State"
+msgstr "Estat"
+
+msgctxt "field:sale.cart,total_amount:"
+msgid "Amount"
+msgstr "Import"
+
+msgctxt "field:sale.cart,unit_price:"
+msgid "Unit Price"
+msgstr "Preu unitat"
+
+msgctxt "field:sale.cart,untaxed_amount:"
+msgid "Untaxed"
+msgstr "Base imposable"
+
+msgctxt "field:sale.cart,write_date:"
+msgid "Write Date"
+msgstr "Data modificació"
+
+msgctxt "field:sale.cart,write_uid:"
+msgid "Write User"
+msgstr "Usuari modificació"
+
+msgctxt "model:ir.action,name:act_sale_cart"
+msgid "Carts"
+msgstr "Cistelles"
+
+msgctxt "model:ir.action,name:wizard_cart_sale"
+msgid "Create Sale"
+msgstr "Crea comanda de venda"
+
+msgctxt "model:ir.action.act_window.domain,name:act_sale_cart_domain_all"
+msgid "All"
+msgstr "Tots"
+
+msgctxt "model:ir.action.act_window.domain,name:act_sale_cart_domain_draft"
+msgid "Draft"
+msgstr "Esborrany"
+
+msgctxt "model:ir.ui.menu,name:menu_sale_cart"
+msgid "Carts"
+msgstr "Cistelles"
+
+msgctxt "model:sale.cart,name:"
+msgid "Sale Cart"
+msgstr "Cistella de venda"
+
+msgctxt "selection:sale.cart,state:"
+msgid "Done"
+msgstr "Finalitzat"
+
+msgctxt "selection:sale.cart,state:"
+msgid "Draft"
+msgstr "Esborrany"
+
+msgctxt "selection:sale.cart,state:"
+msgid "Waiting"
+msgstr "En espera"
+
+msgctxt "view:sale.cart:"
+msgid "Carts"
+msgstr "Cistelles"

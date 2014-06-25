@@ -1,0 +1,115 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:sale.cart:"
+msgid "Add a party in ID \"%s\" cart."
+msgstr "Añade un tercero en la cesta ID \"%s\"."
+
+msgctxt "error:sale.cart:"
+msgid "Cart \"%s - %s\" is done. Can not delete."
+msgstr "La cesta \"%s - %s\" esta en estado realizado. No se puede eliminar."
+
+msgctxt "field:sale.cart,cart_date:"
+msgid "Date"
+msgstr "Fecha"
+
+msgctxt "field:sale.cart,create_date:"
+msgid "Create Date"
+msgstr "Fecha creación"
+
+msgctxt "field:sale.cart,create_uid:"
+msgid "Create User"
+msgstr "Usuario creación"
+
+msgctxt "field:sale.cart,currency:"
+msgid "Currency"
+msgstr "Moneda"
+
+msgctxt "field:sale.cart,currency_digits:"
+msgid "Currency Digits"
+msgstr "Dígitos moneda"
+
+msgctxt "field:sale.cart,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:sale.cart,party:"
+msgid "Party"
+msgstr "Tercero"
+
+msgctxt "field:sale.cart,product:"
+msgid "Product"
+msgstr "Producto"
+
+msgctxt "field:sale.cart,quantity:"
+msgid "Quantity"
+msgstr "Cantidad"
+
+msgctxt "field:sale.cart,rec_name:"
+msgid "Name"
+msgstr "Nombre"
+
+msgctxt "field:sale.cart,state:"
+msgid "State"
+msgstr "Estado"
+
+msgctxt "field:sale.cart,total_amount:"
+msgid "Amount"
+msgstr "Total"
+
+msgctxt "field:sale.cart,unit_price:"
+msgid "Unit Price"
+msgstr "Precio unidad"
+
+msgctxt "field:sale.cart,untaxed_amount:"
+msgid "Untaxed"
+msgstr "Base imponible"
+
+msgctxt "field:sale.cart,write_date:"
+msgid "Write Date"
+msgstr "Fecha modificación"
+
+msgctxt "field:sale.cart,write_uid:"
+msgid "Write User"
+msgstr "Usuario modificación"
+
+msgctxt "model:ir.action,name:act_sale_cart"
+msgid "Carts"
+msgstr "Cestas"
+
+msgctxt "model:ir.action,name:wizard_cart_sale"
+msgid "Create Sale"
+msgstr "Crear pedido venta"
+
+msgctxt "model:ir.action.act_window.domain,name:act_sale_cart_domain_all"
+msgid "All"
+msgstr "Todos"
+
+msgctxt "model:ir.action.act_window.domain,name:act_sale_cart_domain_draft"
+msgid "Draft"
+msgstr "Borrador"
+
+msgctxt "model:ir.ui.menu,name:menu_sale_cart"
+msgid "Carts"
+msgstr "Cestas"
+
+msgctxt "model:sale.cart,name:"
+msgid "Sale Cart"
+msgstr "Cestas de venta"
+
+msgctxt "selection:sale.cart,state:"
+msgid "Done"
+msgstr "Realizado"
+
+msgctxt "selection:sale.cart,state:"
+msgid "Draft"
+msgstr "Borrador"
+
+msgctxt "selection:sale.cart,state:"
+msgid "Waiting"
+msgstr "En espera"
+
+msgctxt "view:sale.cart:"
+msgid "Carts"
+msgstr "Cestas"

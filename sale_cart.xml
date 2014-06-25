@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- This file is part sale_cart module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <record model="ir.ui.view" id="sale_cart_view_tree">
+            <field name="model">sale.cart</field>
+            <field name="type">tree</field>
+            <field name="name">cart_tree</field>
+        </record>
+
+        <record model="ir.action.act_window" id="act_sale_cart">
+            <field name="name">Carts</field>
+            <field name="res_model">sale.cart</field>
+        </record>
+        <record model="ir.action.act_window.view" id="act_sale_cart_view1">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="sale_cart_view_tree"/>
+            <field name="act_window" ref="act_sale_cart"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_sale_cart_domain_draft">
+            <field name="name">Draft</field>
+            <field name="sequence" eval="10"/>
+            <field name="domain">[('state', '=', 'draft')]</field>
+            <field name="act_window" ref="act_sale_cart"/>
+        </record>
+        <record model="ir.action.act_window.domain" id="act_sale_cart_domain_all">
+            <field name="name">All</field>
+            <field name="sequence" eval="9999"/>
+            <field name="domain"></field>
+            <field name="act_window" ref="act_sale_cart"/>
+        </record>
+        <menuitem parent="sale.menu_sale" action="act_sale_cart"
+            id="menu_sale_cart"/>
+
+        <!--  CartSale - Wizard -->
+        <record model="ir.action.wizard" id="wizard_cart_sale">
+            <field name="name">Create Sale</field>
+            <field name="wiz_name">cart.create_sale</field>
+            <field name="model">sale.cart</field>
+        </record>
+        <record model="ir.action.keyword" id="act_wizard_cart_sale_keyword">
+            <field name="keyword">form_action</field>
+            <field name="model">sale.cart,-1</field>
+            <field name="action" ref="wizard_cart_sale"/>
+        </record>
+    </data>
+</tryton>
