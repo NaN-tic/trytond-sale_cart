@@ -27,13 +27,11 @@ class SaleCart(ModelSQL, ModelView):
             })
     quantity = fields.Float('Quantity',
         digits=(16, 2),
-        on_change=['product', 'quantity', 'unit', 'currency', 'party'],
         states={
             'readonly': (Eval('state') != 'draft') 
             }, required=True)
     product = fields.Many2One('product.product', 'Product',
         domain=[('salable', '=', True)],
-        on_change=['product', 'unit', 'quantity', 'party', 'currency'],
         states={
             'readonly': (Eval('state') != 'draft') 
             }, required=True,
@@ -46,13 +44,11 @@ class SaleCart(ModelSQL, ModelView):
             }, required=True)
     untaxed_amount = fields.Function(fields.Numeric('Untaxed',
             digits=(16, Eval('currency_digits', 2)),
-            on_change_with=['quantity', 'product', 'unit_price', 'currency'],
             depends=['quantity', 'product', 'unit_price', 'currency',
                 'currency_digits'],
             ), 'get_untaxed_amount')
     total_amount = fields.Function(fields.Numeric('Amount',
             digits=(16, Eval('currency_digits', 2)),
-            on_change_with=['quantity', 'product', 'unit_price', 'currency'],
             depends=['quantity', 'product', 'unit_price', 'currency',
                 'currency_digits'],
             ), 'get_total_amount')
@@ -61,8 +57,8 @@ class SaleCart(ModelSQL, ModelView):
             'readonly': (Eval('state') != 'draft') 
             }, required=True,
         depends=['state'])
-    currency_digits = fields.Function(fields.Integer('Currency Digits',
-            on_change_with=['currency']), 'on_change_with_currency_digits')
+    currency_digits = fields.Function(fields.Integer('Currency Digits'),
+        'on_change_with_currency_digits')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('wait', 'Waiting'),
@@ -95,6 +91,7 @@ class SaleCart(ModelSQL, ModelView):
         if company:
             return Company(company).currency.id
 
+    @fields.depends('product', 'unit', 'quantity', 'party', 'currency')
     def on_change_product(self):
         Line = Pool().get('sale.line')
         line = Line()
@@ -106,6 +103,7 @@ class SaleCart(ModelSQL, ModelView):
         line.description = None
         return line.on_change_product()
 
+    @fields.depends('product', 'quantity', 'unit', 'currency', 'party')
     def on_change_quantity(self):
         if not self.product:
             return {}
@@ -118,11 +116,13 @@ class SaleCart(ModelSQL, ModelView):
         line.quantity = self.quantity or 0
         return line.on_change_quantity()
 
+    @fields.depends('currency')
     def on_change_with_currency_digits(self, name=None):
         if self.currency:
             return self.currency.digits
         return 2
 
+    @fields.depends('quantity', 'product', 'unit_price', 'currency')
     def on_change_with_untaxed_amount(self, name=None):
         return self.get_untaxed_amount(name)
 
@@ -132,6 +132,7 @@ class SaleCart(ModelSQL, ModelView):
                 Decimal(str(self.quantity)) * self.unit_price)
         return Decimal('0.0')
 
+    @fields.depends('quantity', 'product', 'unit_price', 'currency')
     def on_change_with_total_amount(self, name=None):
         return self.get_total_amount(name)
 
