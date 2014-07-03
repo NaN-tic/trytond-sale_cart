@@ -159,7 +159,7 @@ class SaleCart(ModelSQL, ModelView):
             if cart.state == 'done':
                 cls.raise_user_error('delete_done', (cart.party.rec_name,
                     cart.product.rec_name,))
-        super(Cart, cls).delete(carts)
+        super(SaleCart, cls).delete(carts)
 
     @classmethod
     def create_sale(self, carts):
