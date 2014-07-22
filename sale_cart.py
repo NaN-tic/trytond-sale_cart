@@ -86,9 +86,16 @@ class SaleCart(ModelSQL, ModelView):
 
     @staticmethod
     def default_currency():
-        Company = Pool().get('company.company')
+        shop = Transaction().context.get('shop')
         company = Transaction().context.get('company')
+
+        if shop:
+            Shop = Pool().get('sale.shop')
+            shop = Shop(shop)
+            if hasattr(shop, 'esale_currency'):
+                return shop.esale_currency.id
         if company:
+            Company = Pool().get('company.company')
             return Company(company).currency.id
 
     @fields.depends('product', 'unit', 'quantity', 'party', 'currency')
