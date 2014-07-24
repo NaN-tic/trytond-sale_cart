@@ -170,10 +170,12 @@ class SaleCart(ModelSQL, ModelView):
         super(SaleCart, cls).delete(carts)
 
     @classmethod
-    def create_sale(cls, carts):
+    def create_sale(cls, carts, values={}):
         '''
         Create sale from cart
-        Return sales list
+        :param carts: list
+        :param values: dict default values
+        return obj list
         '''
         pool = Pool()
         Sale = pool.get('sale.sale')
@@ -208,6 +210,9 @@ class SaleCart(ModelSQL, ModelView):
         # Create sale and sale lines
         for party, lines in cart_group.iteritems():
             sale = Sale.get_sale_data(party)
+            if values:
+                for k, v in values.iteritems():
+                    setattr(sale, k, v)
             sale.save()
             sales.add(sale)
 
