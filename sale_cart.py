@@ -6,6 +6,8 @@ from trytond.wizard import Wizard, StateTransition, StateAction
 from trytond.pool import Pool
 from trytond.transaction import Transaction
 from trytond.pyson import Eval, PYSONEncoder
+from trytond.config import CONFIG
+DIGITS = int(CONFIG.get('unit_price_digits', 4))
 
 from decimal import Decimal
 
@@ -38,7 +40,7 @@ class SaleCart(ModelSQL, ModelView):
         context={
             'salable': True,
             })
-    unit_price = fields.Numeric('Unit Price', digits=(16, 4),
+    unit_price = fields.Numeric('Unit Price', digits=(16, DIGITS),
         states={
             'readonly': (Eval('state') != 'draft')
             }, required=True)
