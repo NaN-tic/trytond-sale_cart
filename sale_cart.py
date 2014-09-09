@@ -132,14 +132,29 @@ class SaleCart(ModelSQL, ModelView):
     def on_change_quantity(self):
         if not self.product:
             return {}
+
         SaleLine = Pool().get('sale.line')
-        line = SaleLine()
-        line.sale = None
-        line.party = self.party or None
-        line.product = self.product
-        line.unit = self.product.sale_uom.id
-        line.quantity = self.quantity or 0
-        return super(SaleLine, line).on_change_quantity()
+        Product = Pool().get('product.product')
+
+        context = {}
+        if self.party:
+            context['customer'] = self.party.id
+        if self.party and self.party.sale_price_list:
+            context['price_list'] = self.party.sale_price_list.id
+
+        with Transaction().set_context(context):
+            line = SaleLine()
+            line.sale = None
+            line.party = self.party or None
+            line.product = self.product
+            line.unit = self.product and self.product.sale_uom.id or None
+            line.quantity = self.quantity or 0
+            line.description = None
+            res = super(SaleLine, line).on_change_product()
+            if self.product:
+                res['unit_price'] = Product.get_sale_price([self.product],
+                        self.quantity or 0)[self.product.id]
+        return res
 
     @fields.depends('currency')
     def on_change_with_currency_digits(self, name=None):
