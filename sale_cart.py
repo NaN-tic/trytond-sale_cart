@@ -81,6 +81,10 @@ class SaleCart(ModelSQL, ModelView):
         return Date.today()
 
     @staticmethod
+    def default_quantity():
+        return 1
+
+    @staticmethod
     def default_state():
         return 'draft'
 
@@ -102,14 +106,27 @@ class SaleCart(ModelSQL, ModelView):
     @fields.depends('product', 'unit', 'quantity', 'party', 'currency')
     def on_change_product(self):
         SaleLine = Pool().get('sale.line')
-        line = SaleLine()
-        line.sale = None
-        line.party = self.party or None
-        line.product = self.product
-        line.unit = self.product and self.product.sale_uom.id or None
-        line.quantity = self.quantity or 0
-        line.description = None
-        return super(SaleLine, line).on_change_product()
+        Product = Pool().get('product.product')
+
+        context = {}
+        if self.party:
+            context['customer'] = self.party.id
+        if self.party and self.party.sale_price_list:
+            context['price_list'] = self.party.sale_price_list.id
+
+        with Transaction().set_context(context):
+            line = SaleLine()
+            line.sale = None
+            line.party = self.party or None
+            line.product = self.product
+            line.unit = self.product and self.product.sale_uom.id or None
+            line.quantity = self.quantity or 0
+            line.description = None
+            res = super(SaleLine, line).on_change_product()
+            if self.product:
+                res['unit_price'] = Product.get_sale_price([self.product],
+                        self.quantity or 0)[self.product.id]
+        return res
 
     @fields.depends('product', 'quantity', 'unit', 'currency', 'party')
     def on_change_quantity(self):
