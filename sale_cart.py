@@ -13,37 +13,28 @@ from decimal import Decimal
 
 __all__ = ['SaleCart', 'CartCreateSale']
 
+STATES = {
+    'readonly': (Eval('state') != 'draft')
+    }
+
 
 class SaleCart(ModelSQL, ModelView):
     'Sale Cart'
     __name__ = 'sale.cart'
     _rec_name = 'product'
     cart_date = fields.Date('Date',
-        states={
-            'readonly': (Eval('state') != 'draft')
-            },
-        depends=['state'], required=True)
+        states=STATES, depends=['state'], required=True)
     party = fields.Many2One('party.party', 'Party',
-        states={
-            'readonly': (Eval('state') != 'draft')
-            })
+        states=STATES)
     quantity = fields.Float('Quantity',
-        digits=(16, 2),
-        states={
-            'readonly': (Eval('state') != 'draft')
-            }, required=True)
+        digits=(16, 2), states=STATES, required=True)
     product = fields.Many2One('product.product', 'Product',
-        domain=[('salable', '=', True)],
-        states={
-            'readonly': (Eval('state') != 'draft')
-            }, required=True,
+        domain=[('salable', '=', True)], states=STATES, required=True,
         context={
             'salable': True,
             })
     unit_price = fields.Numeric('Unit Price', digits=(16, DIGITS),
-        states={
-            'readonly': (Eval('state') != 'draft')
-            }, required=True)
+        states=STATES, required=True)
     untaxed_amount = fields.Function(fields.Numeric('Untaxed',
             digits=(16, Eval('currency_digits', 2)),
             depends=['quantity', 'product', 'unit_price', 'currency',
@@ -55,10 +46,7 @@ class SaleCart(ModelSQL, ModelView):
                 'currency_digits'],
             ), 'get_total_amount')
     currency = fields.Many2One('currency.currency', 'Currency',
-        states={
-            'readonly': (Eval('state') != 'draft')
-            }, required=True,
-        depends=['state'])
+        states=STATES, required=True, depends=['state'])
     currency_digits = fields.Function(fields.Integer('Currency Digits'),
         'on_change_with_currency_digits')
     state = fields.Selection([
