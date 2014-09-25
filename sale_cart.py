@@ -96,6 +96,7 @@ class SaleCart(ModelSQL, ModelView):
     @fields.depends('product', 'unit', 'quantity', 'party', 'currency')
     def on_change_product(self):
         Product = Pool().get('product.product')
+        User = Pool().get('res.user')
 
         res = {}
 
@@ -104,6 +105,9 @@ class SaleCart(ModelSQL, ModelView):
             context['customer'] = self.party.id
         if self.party and self.party.sale_price_list:
             context['price_list'] = self.party.sale_price_list.id
+        else:
+            user = User(Transaction().user)
+            context['price_list'] = user.shop.price_list.id if user.shop else None
 
         if self.product:
             with Transaction().set_context(context):
