@@ -10,6 +10,10 @@ msgctxt "error:sale.cart:"
 msgid "Cart \"%s - %s\" is done. Can not delete."
 msgstr "La cesta \"%s - %s\" esta en estado realizado. No se puede eliminar."
 
+msgctxt "field:sale.cart,amount_w_tax:"
+msgid "Amount with Tax"
+msgstr "Total"
+
 msgctxt "field:sale.cart,cart_date:"
 msgid "Date"
 msgstr "Fecha"
@@ -54,13 +58,13 @@ msgctxt "field:sale.cart,state:"
 msgid "State"
 msgstr "Estado"
 
-msgctxt "field:sale.cart,total_amount:"
-msgid "Amount"
-msgstr "Total"
-
 msgctxt "field:sale.cart,unit_price:"
 msgid "Unit Price"
 msgstr "Precio unidad"
+
+msgctxt "field:sale.cart,unit_price_w_tax:"
+msgid "Unit Price with Tax"
+msgstr "Precio unidad imp. incl."
 
 msgctxt "field:sale.cart,untaxed_amount:"
 msgid "Untaxed"
