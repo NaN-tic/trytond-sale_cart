@@ -35,16 +35,15 @@ class SaleCart(ModelSQL, ModelView):
             })
     unit_price = fields.Numeric('Unit Price', digits=(16, DIGITS),
         states=STATES, required=True)
+    unit_price_w_tax = fields.Function(fields.Numeric('Unit Price with Tax',
+        digits=(16, DIGITS)), 'get_price_with_tax')
     untaxed_amount = fields.Function(fields.Numeric('Untaxed',
             digits=(16, Eval('currency_digits', 2)),
             depends=['quantity', 'product', 'unit_price', 'currency',
                 'currency_digits'],
             ), 'get_untaxed_amount')
-    total_amount = fields.Function(fields.Numeric('Amount',
-            digits=(16, Eval('currency_digits', 2)),
-            depends=['quantity', 'product', 'unit_price', 'currency',
-                'currency_digits'],
-            ), 'get_total_amount')
+    amount_w_tax = fields.Function(fields.Numeric('Amount with Tax',
+        digits=(16, DIGITS)), 'get_price_with_tax')
     currency = fields.Many2One('currency.currency', 'Currency',
         states=STATES, required=True, depends=['state'])
     currency_digits = fields.Function(fields.Integer('Currency Digits'),
@@ -153,33 +152,59 @@ class SaleCart(ModelSQL, ModelView):
     def on_change_with_untaxed_amount(self, name=None):
         return self.get_untaxed_amount(name)
 
+    @fields.depends('quantity', 'product', 'unit_price', 'untaxed_amount', 'currency')
+    def on_change_with_unit_price_w_tax(self, name=None):
+        return self.get_price_with_tax([self],
+            ['unit_price_w_tax'])['unit_price_w_tax'][self.id]
+
+    @fields.depends('quantity', 'product', 'unit_price', 'untaxed_amount', 'currency')
+    def on_change_with_amount_w_tax(self, name=None):
+        return self.get_price_with_tax([self],
+            ['amount_w_tax'])['amount_w_tax'][self.id]
+
     def get_untaxed_amount(self, name):
         if self.quantity and self.unit_price:
             return self.currency.round(
                 Decimal(str(self.quantity)) * self.unit_price)
         return Decimal('0.0')
 
-    @fields.depends('quantity', 'product', 'unit_price', 'currency')
-    def on_change_with_total_amount(self, name=None):
-        return self.get_total_amount(name)
-
-    def get_total_amount(self, name):
+    @classmethod
+    def get_price_with_tax(cls, lines, names):
         pool = Pool()
         Tax = pool.get('account.tax')
         Invoice = pool.get('account.invoice')
+        amount_w_tax = {}
+        unit_price_w_tax = {}
 
-        if self.quantity and self.unit_price and self.product:
-            taxes = self.product.customer_taxes_used
-            tax_list = Tax.compute(taxes,
-                self.unit_price or Decimal('0.0'),
-                self.quantity or 0.0)
+        for line in lines:
+            currency = line.currency
+            if line.quantity and line.unit_price and line.product and line.untaxed_amount:
+                taxes = line.product.customer_taxes_used
+                tax_list = Tax.compute(taxes,
+                    line.unit_price or Decimal('0.0'),
+                    line.quantity or 0.0)
 
-            tax_amount = Decimal('0.0')
-            for tax in tax_list:
-                _, val = Invoice._compute_tax(tax, 'out_invoice')
-                tax_amount += val.get('amount')
-            return self.get_untaxed_amount(name) + tax_amount
-        return Decimal('0.0')
+                tax_amount = Decimal('0.0')
+                for tax in tax_list:
+                    _, val = Invoice._compute_tax(tax, 'out_invoice')
+                    tax_amount += val.get('amount')
+                amount = line.untaxed_amount + tax_amount
+                unit_price = amount / Decimal(str(line.quantity))
+            else:
+                amount = Decimal('0.0')
+                unit_price = Decimal('0.0')
+
+            amount_w_tax[line.id] = currency.round(amount)
+            unit_price_w_tax[line.id] = currency.round(unit_price)
+
+        result = {
+            'amount_w_tax': amount_w_tax,
+            'unit_price_w_tax': unit_price_w_tax,
+            }
+        for key in result.keys():
+            if key not in names:
+                del result[key]
+        return result
 
     @classmethod
     def delete(cls, carts):

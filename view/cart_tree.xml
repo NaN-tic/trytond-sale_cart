@@ -7,8 +7,9 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
     <field name="quantity"/>
     <field name="product"/>
     <field name="unit_price"/>
+    <field name="unit_price_w_tax"/>
     <field name="untaxed_amount"/>
-    <field name="total_amount"/>
+    <field name="amount_w_tax"/>
     <field name="currency"/>
     <field name="state"/>
 </tree>
