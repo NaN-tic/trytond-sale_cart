@@ -12,4 +12,5 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
     <field name="amount_w_tax"/>
     <field name="currency"/>
     <field name="state"/>
+    <field name="shop"/>
 </tree>

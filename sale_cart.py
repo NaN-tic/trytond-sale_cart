@@ -22,6 +22,9 @@ class SaleCart(ModelSQL, ModelView):
     'Sale Cart'
     __name__ = 'sale.cart'
     _rec_name = 'product'
+    shop = fields.Many2One('sale.shop', 'Shop', required=True, domain=[
+        ('id', 'in', Eval('context', {}).get('shops', [])),
+        ])
     cart_date = fields.Date('Date',
         states=STATES, depends=['state'], required=True)
     party = fields.Many2One('party.party', 'Party',
@@ -63,6 +66,12 @@ class SaleCart(ModelSQL, ModelView):
             'delete_done': ('Cart "%s - %s" is done. Can not delete.'),
             'add_party': ('Add a party in ID "%s" cart.'),
             })
+
+    @staticmethod
+    def default_shop():
+        User = Pool().get('res.user')
+        user = User(Transaction().user)
+        return user.shop.id if user.shop else None
 
     @staticmethod
     def default_cart_date():
