@@ -44,5 +44,22 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
             <field name="model">sale.cart,-1</field>
             <field name="action" ref="wizard_cart_sale"/>
         </record>
+
+        <!-- Access -->
+        <record model="ir.model.access" id="access_sale_cart">
+            <field name="model" search="[('model', '=', 'sale.cart')]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_delete" eval="False"/>
+        </record>
+        <record model="ir.model.access" id="access_sale_sale_cart">
+            <field name="model" search="[('model', '=', 'sale.cart')]"/>
+            <field name="group" ref="sale.group_sale"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_delete" eval="True"/>
+        </record>
     </data>
 </tryton>
