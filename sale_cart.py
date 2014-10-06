@@ -181,7 +181,6 @@ class SaleCart(ModelSQL, ModelView):
     def get_price_with_tax(cls, lines, names):
         pool = Pool()
         Tax = pool.get('account.tax')
-        Invoice = pool.get('account.invoice')
         amount_w_tax = {}
         unit_price_w_tax = {}
 
@@ -192,11 +191,7 @@ class SaleCart(ModelSQL, ModelView):
                 tax_list = Tax.compute(taxes,
                     line.unit_price or Decimal('0.0'),
                     line.quantity or 0.0)
-
-                tax_amount = Decimal('0.0')
-                for tax in tax_list:
-                    _, val = Invoice._compute_tax(tax, 'out_invoice')
-                    tax_amount += val.get('amount')
+                tax_amount = sum([t['amount'] for t in tax_list], Decimal('0.0'))
                 amount = line.untaxed_amount + tax_amount
                 unit_price = amount / Decimal(str(line.quantity))
             else:
