@@ -262,7 +262,11 @@ class SaleCart(ModelSQL, ModelView):
             if values:
                 for k, v in values.iteritems():
                     setattr(sale, k, v)
-            sale.save()
+            try:
+                sale.save()
+            except:
+                #TODO: Get logger exception
+                return []
             sales.add(sale)
 
             for line in lines:
