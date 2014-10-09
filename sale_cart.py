@@ -10,6 +10,7 @@ from trytond.config import CONFIG
 DIGITS = int(CONFIG.get('unit_price_digits', 4))
 
 from decimal import Decimal
+import sys
 
 __all__ = ['SaleCart', 'CartCreateSale']
 
@@ -224,7 +225,7 @@ class SaleCart(ModelSQL, ModelView):
         Create sale from cart
         :param carts: list
         :param values: dict default values
-        return obj list
+        return obj list, error
         '''
         pool = Pool()
         Sale = pool.get('sale.sale')
@@ -265,8 +266,8 @@ class SaleCart(ModelSQL, ModelView):
             try:
                 sale.save()
             except:
-                #TODO: Get logger exception
-                return []
+                exc_type, exc_value = sys.exc_info()[:2]
+                return [], exc_value
             sales.add(sale)
 
             for line in lines:
@@ -276,7 +277,7 @@ class SaleCart(ModelSQL, ModelView):
                 sale_line.save()
 
         cls.write(carts, {'state': 'done'})
-        return sales
+        return sales, None
 
 
 class CartCreateSale(Wizard):
