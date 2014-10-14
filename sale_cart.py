@@ -294,7 +294,8 @@ class CartCreateSale(Wizard):
         return 'open_'
 
     def do_open_(self, action):
-        ids = [sale.id for sale in list(self.sales)]
+        sales, _ = self.sales
+        ids = [sale.id for sale in list(sales)]
         action['pyson_domain'] = PYSONEncoder().encode(
             [('id', 'in', ids)])
         return action, {}
