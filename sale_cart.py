@@ -1,13 +1,13 @@
-#This file is part of sale_cart module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains
-#the full copyright notices and license terms.
+# This file is part of sale_cart module for Tryton.
+# The COPYRIGHT file at the top level of this repository contains
+# the full copyright notices and license terms.
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.wizard import Wizard, StateTransition, StateAction
 from trytond.pool import Pool
 from trytond.transaction import Transaction
 from trytond.pyson import Eval, PYSONEncoder
-from trytond.config import CONFIG
-DIGITS = int(CONFIG.get('unit_price_digits', 4))
+from trytond.config import config
+DIGITS = int(config.get('digits', 'unit_price_digits'))
 
 from decimal import Decimal
 import sys
