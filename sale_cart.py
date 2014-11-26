@@ -7,7 +7,7 @@ from trytond.pool import Pool
 from trytond.transaction import Transaction
 from trytond.pyson import Eval, PYSONEncoder
 from trytond.config import config
-DIGITS = int(config.get('digits', 'unit_price_digits'))
+DIGITS = int(config.get('digits', 'unit_price_digits', 4))
 
 from decimal import Decimal
 import sys
