@@ -263,18 +263,21 @@ class SaleCart(ModelSQL, ModelView):
             if values:
                 for k, v in values.iteritems():
                     setattr(sale, k, v)
+
+            sale_lines = []
+            for line in lines:
+                sale_line = SaleLine.get_sale_line_data(sale,
+                    line.get('product'), line.get('quantity'))
+                sale_line.unit_price = line.get('unit_price')
+                sale_lines.append(sale_line)
+
+            sale.lines = sale_lines
             try:
                 sale.save()
             except:
                 exc_type, exc_value = sys.exc_info()[:2]
                 return [], exc_value
             sales.add(sale)
-
-            for line in lines:
-                sale_line = SaleLine.get_sale_line_data(sale,
-                    line.get('product'), line.get('quantity'))
-                sale_line.unit_price = line.get('unit_price')
-                sale_line.save()
 
         cls.write(carts, {'state': 'done'})
         return sales, None
