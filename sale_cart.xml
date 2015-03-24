@@ -32,6 +32,10 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
         </record>
         <menuitem parent="sale.menu_sale" action="act_sale_cart"
             id="menu_sale_cart"/>
+        <record model="ir.ui.menu-res.group" id="menu_sale_cart_group_sale">
+            <field name="menu" ref="menu_sale_cart"/>
+            <field name="group" ref="sale.group_sale"/>
+        </record>
 
         <!--  CartSale - Wizard -->
         <record model="ir.action.wizard" id="wizard_cart_sale">
