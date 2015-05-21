@@ -182,6 +182,7 @@ class SaleCart(ModelSQL, ModelView):
     def get_price_with_tax(cls, lines, names):
         pool = Pool()
         Tax = pool.get('account.tax')
+
         amount_w_tax = {}
         unit_price_w_tax = {}
 
@@ -189,6 +190,15 @@ class SaleCart(ModelSQL, ModelView):
             currency = line.currency
             if line.quantity and line.unit_price and line.product and line.untaxed_amount:
                 taxes = line.product.customer_taxes_used
+
+                if taxes and line.party and line.party.customer_tax_rule:
+                    new_taxes = []
+                    for tax in taxes:
+                        tax_ids = line.party.customer_tax_rule.apply(tax, pattern={})
+                        new_taxes = new_taxes + tax_ids
+                    if new_taxes:
+                        taxes = Tax.browse(new_taxes)
+
                 tax_list = Tax.compute(taxes,
                     line.unit_price or Decimal('0.0'),
                     line.quantity or 0.0)
