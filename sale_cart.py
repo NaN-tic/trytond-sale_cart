@@ -6,9 +6,7 @@ from trytond.wizard import Wizard, StateTransition, StateAction
 from trytond.pool import Pool
 from trytond.transaction import Transaction
 from trytond.pyson import Eval, PYSONEncoder
-from trytond.config import config
-DIGITS = int(config.get('digits', 'unit_price_digits', 4))
-
+from trytond.config import config as config_
 from decimal import Decimal
 import sys
 
@@ -17,6 +15,7 @@ __all__ = ['SaleCart', 'CartCreateSale']
 STATES = {
     'readonly': (Eval('state') != 'draft')
     }
+DIGITS = config_.getint('product', 'price_decimal', default=4)
 
 
 class SaleCart(ModelSQL, ModelView):
