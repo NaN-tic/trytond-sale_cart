@@ -101,12 +101,8 @@ class SaleCart(ModelSQL, ModelView):
             Company = Pool().get('company.company')
             return Company(company).currency.id
 
-    @fields.depends('product', 'unit', 'quantity', 'party', 'currency')
-    def on_change_product(self):
-        Product = Pool().get('product.product')
+    def _get_context_sale_price(self):
         User = Pool().get('res.user')
-
-        res = {}
 
         context = {}
         if self.party:
@@ -116,40 +112,31 @@ class SaleCart(ModelSQL, ModelView):
         else:
             user = User(Transaction().user)
             context['price_list'] = user.shop.price_list.id if user.shop else None
+        return context
 
-        if self.product:
-            with Transaction().set_context(context):
-                res['unit_price'] = Product.get_sale_price([self.product],
-                        self.quantity or 0)[self.product.id]
-        return res
+    @fields.depends('product', 'unit', 'quantity', 'party', 'currency')
+    def on_change_product(self):
+        Product = Pool().get('product.product')
+
+        if not self.product:
+            return
+
+        with Transaction().set_context(
+                self._get_context_sale_price()):
+            prices = Product.get_sale_price([self.product], self.quantity or 0)
+            self.unit_price = prices[self.product.id]
 
     @fields.depends('product', 'quantity', 'unit', 'currency', 'party')
     def on_change_quantity(self):
-        if not self.product:
-            return {}
-
-        SaleLine = Pool().get('sale.line')
         Product = Pool().get('product.product')
 
-        context = {}
-        if self.party:
-            context['customer'] = self.party.id
-        if self.party and self.party.sale_price_list:
-            context['price_list'] = self.party.sale_price_list.id
+        if not self.product:
+            return
 
-        with Transaction().set_context(context):
-            line = SaleLine()
-            line.sale = None
-            line.party = self.party or None
-            line.product = self.product
-            line.unit = self.product and self.product.sale_uom.id or None
-            line.quantity = self.quantity or 0
-            line.description = None
-            res = super(SaleLine, line).on_change_product()
-            if self.product:
-                res['unit_price'] = Product.get_sale_price([self.product],
-                        self.quantity or 0)[self.product.id]
-        return res
+        with Transaction().set_context(
+                self._get_context_sale_price()):
+            prices = Product.get_sale_price([self.product], self.quantity or 0)
+            self.unit_price = prices[self.product.id]
 
     @fields.depends('currency')
     def on_change_with_currency_digits(self, name=None):
@@ -241,7 +228,7 @@ class SaleCart(ModelSQL, ModelView):
         SaleLine = pool.get('sale.line')
 
         cart_group = {}
-        sales = set()
+        sales = []
 
         # Group carts in party
         for cart in carts:
@@ -267,26 +254,27 @@ class SaleCart(ModelSQL, ModelView):
                 cart_group[cart.party] = lines
 
         # Create sale and sale lines
-        for party, lines in cart_group.iteritems():
+        for party, clines in cart_group.iteritems():
             sale = Sale.get_sale_data(party)
             if values:
                 for k, v in values.iteritems():
                     setattr(sale, k, v)
 
-            sale_lines = []
-            for line in lines:
-                sale_line = SaleLine.get_sale_line_data(sale,
-                    line.get('product'), line.get('quantity'))
-                sale_line.unit_price = line.get('unit_price')
-                sale_lines.append(sale_line)
+            lines = []
+            for l in clines:
+                line = SaleLine.get_sale_line_data(sale,
+                    l.get('product'), l.get('quantity'))
+                line.unit_price = l.get('unit_price')
+                lines.append(line)
+            sale.lines = lines
+            sales.append(sale)
 
-            sale.lines = sale_lines
+        if sales:
             try:
-                sale.save()
+                Sale.save(sales)
             except:
                 exc_type, exc_value = sys.exc_info()[:2]
                 return [], exc_value
-            sales.add(sale)
 
         cls.write(carts, {'state': 'done'})
         return sales, None
@@ -307,7 +295,7 @@ class CartCreateSale(Wizard):
 
     def do_open_(self, action):
         sales, _ = self.sales
-        ids = [sale.id for sale in list(sales)]
+        ids = [sale.id for sale in sales]
         action['pyson_domain'] = PYSONEncoder().encode(
             [('id', 'in', ids)])
         return action, {}
