@@ -216,6 +216,28 @@ class SaleCart(ModelSQL, ModelView):
         super(SaleCart, cls).delete(carts)
 
     @classmethod
+    def _sale_line_data(cls, cart):
+        '''
+        Convert cart to dict values
+        :param cart: obj
+        return dict
+        '''
+        return {
+            'product': cart.product,
+            'unit_price': cart.unit_price,
+            'quantity': cart.quantity,
+            }
+
+    @classmethod
+    def _sale_line(cls, line, data):
+        '''
+        Assing new attributes from cart
+        :param line: obj
+        :param data: dict
+        '''
+        line.unit_price = data.get('unit_price')
+
+    @classmethod
     def create_sale(cls, carts, values={}):
         '''
         Create sale from cart
@@ -239,18 +261,10 @@ class SaleCart(ModelSQL, ModelView):
                 cls.raise_user_error('add_party', (cart.id,))
 
             if not cart.party in cart_group:
-                cart_group[cart.party] = [{
-                    'product': cart.product,
-                    'unit_price': cart.unit_price,
-                    'quantity': cart.quantity,
-                    }]
+                cart_group[cart.party] = [cls._sale_line_data(cart)]
             else:
                 lines = cart_group.get(cart.party)
-                lines.append({
-                    'product': cart.product,
-                    'unit_price': cart.unit_price,
-                    'quantity': cart.quantity,
-                })
+                lines.append(cls._sale_line_data(cart))
                 cart_group[cart.party] = lines
 
         # Create sale and sale lines
@@ -261,10 +275,10 @@ class SaleCart(ModelSQL, ModelView):
                     setattr(sale, k, v)
 
             lines = []
-            for l in clines:
+            for data in clines:
                 line = SaleLine.get_sale_line_data(sale,
-                    l.get('product'), l.get('quantity'))
-                line.unit_price = l.get('unit_price')
+                    data.get('product'), data.get('quantity'))
+                cls._sale_line(line, data)
                 lines.append(line)
             sale.lines = lines
             sales.append(sale)
