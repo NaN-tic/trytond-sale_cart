@@ -215,27 +215,12 @@ class SaleCart(ModelSQL, ModelView):
                     cart.product.rec_name,))
         super(SaleCart, cls).delete(carts)
 
-    @classmethod
-    def _sale_line_data(cls, cart):
-        '''
-        Convert cart to dict values
-        :param cart: obj
-        return dict
-        '''
-        return {
-            'product': cart.product,
-            'unit_price': cart.unit_price,
-            'quantity': cart.quantity,
-            }
+    def get_sale_line(self, sale):
+        Line = Pool().get('sale.line')
 
-    @classmethod
-    def _sale_line(cls, line, data):
-        '''
-        Assing new attributes from cart
-        :param line: obj
-        :param data: dict
-        '''
-        line.unit_price = data.get('unit_price')
+        line = Line.get_sale_line_data(sale, self.product, self.quantity)
+        line.unit_price = self.unit_price
+        return line
 
     @classmethod
     def create_sale(cls, carts, values={}):
@@ -245,9 +230,7 @@ class SaleCart(ModelSQL, ModelView):
         :param values: dict default values
         return obj list, error
         '''
-        pool = Pool()
-        Sale = pool.get('sale.sale')
-        SaleLine = pool.get('sale.line')
+        Sale = Pool().get('sale.sale')
 
         cart_group = {}
         sales = []
@@ -261,24 +244,21 @@ class SaleCart(ModelSQL, ModelView):
                 cls.raise_user_error('add_party', (cart.id,))
 
             if not cart.party in cart_group:
-                cart_group[cart.party] = [cls._sale_line_data(cart)]
+                cart_group[cart.party] = [cart]
             else:
                 lines = cart_group.get(cart.party)
-                lines.append(cls._sale_line_data(cart))
+                lines.append(cart)
                 cart_group[cart.party] = lines
 
         # Create sale and sale lines
-        for party, clines in cart_group.iteritems():
+        for party, pcarts in cart_group.iteritems():
             sale = Sale.get_sale_data(party)
             if values:
                 for k, v in values.iteritems():
                     setattr(sale, k, v)
-
             lines = []
-            for data in clines:
-                line = SaleLine.get_sale_line_data(sale,
-                    data.get('product'), data.get('quantity'))
-                cls._sale_line(line, data)
+            for pcart in pcarts:
+                line = pcart.get_sale_line(sale)
                 lines.append(line)
             sale.lines = lines
             sales.append(sale)
