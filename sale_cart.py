@@ -162,12 +162,14 @@ class SaleCart(ModelSQL, ModelView):
     def on_change_with_untaxed_amount(self, name=None):
         return self.get_untaxed_amount(name)
 
-    @fields.depends('quantity', 'product', 'unit_price', 'untaxed_amount', 'currency')
+    @fields.depends('party', 'quantity', 'product', 'unit_price',
+        'untaxed_amount', 'currency')
     def on_change_with_unit_price_w_tax(self, name=None):
         return self.get_price_with_tax([self],
             ['unit_price_w_tax'])['unit_price_w_tax'][self.id]
 
-    @fields.depends('quantity', 'product', 'unit_price', 'untaxed_amount', 'currency')
+    @fields.depends('party', 'quantity', 'product', 'unit_price',
+        'untaxed_amount', 'currency')
     def on_change_with_amount_w_tax(self, name=None):
         return self.get_price_with_tax([self],
             ['amount_w_tax'])['amount_w_tax'][self.id]
