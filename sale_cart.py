@@ -229,6 +229,13 @@ class SaleCart(ModelSQL, ModelView):
                     cart.product.rec_name,))
         super(SaleCart, cls).delete(carts)
 
+    def get_sale_line(self, sale):
+        Line = Pool().get('sale.line')
+
+        line = Line.get_sale_line_data(sale, self.product, self.quantity)
+        line.unit_price = self.unit_price
+        return line
+
     @classmethod
     def create_sale(cls, carts, values={}):
         '''
@@ -237,9 +244,7 @@ class SaleCart(ModelSQL, ModelView):
         :param values: dict default values
         return obj list, error
         '''
-        pool = Pool()
-        Sale = pool.get('sale.sale')
-        SaleLine = pool.get('sale.line')
+        Sale = Pool().get('sale.sale')
 
         cart_group = {}
         sales = set()
@@ -253,35 +258,25 @@ class SaleCart(ModelSQL, ModelView):
                 cls.raise_user_error('add_party', (cart.id,))
 
             if not cart.party in cart_group:
-                cart_group[cart.party] = [{
-                    'product': cart.product,
-                    'unit_price': cart.unit_price,
-                    'quantity': cart.quantity,
-                    }]
+                cart_group[cart.party] = [cart]
             else:
                 lines = cart_group.get(cart.party)
-                lines.append({
-                    'product': cart.product,
-                    'unit_price': cart.unit_price,
-                    'quantity': cart.quantity,
-                })
+                lines.append(cart)
                 cart_group[cart.party] = lines
 
         # Create sale and sale lines
-        for party, lines in cart_group.iteritems():
+        for party, pcarts in cart_group.iteritems():
             sale = Sale.get_sale_data(party)
             if values:
                 for k, v in values.iteritems():
                     setattr(sale, k, v)
 
-            sale_lines = []
-            for line in lines:
-                sale_line = SaleLine.get_sale_line_data(sale,
-                    line.get('product'), line.get('quantity'))
-                sale_line.unit_price = line.get('unit_price')
-                sale_lines.append(sale_line)
+            lines = []
+            for pcart in pcarts:
+                line = pcart.get_sale_line(sale)
+                lines.append(line)
 
-            sale.lines = sale_lines
+            sale.lines = lines
             try:
                 sale.save()
             except:
