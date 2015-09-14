@@ -54,6 +54,10 @@ msgctxt "field:sale.cart,rec_name:"
 msgid "Name"
 msgstr "Nombre"
 
+msgctxt "field:sale.cart,shop:"
+msgid "Shop"
+msgstr "Tienda"
+
 msgctxt "field:sale.cart,state:"
 msgid "State"
 msgstr "Estado"
